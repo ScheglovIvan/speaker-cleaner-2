@@ -1,0 +1,9 @@
+{
+  "sdk_key": "appstr_5boAubroQ5B8nPDcU7fQ9pwoXjxxRhVxLg1",
+  "placement": "main_speaker-cleaner",
+  "products": [
+    "com.chritech.speakercleaner.speaker_deep_clean_pro_weekly"
+  ],
+  "bundle_id": "com.chritech.speakercleaner",
+  "mode": "production"
+}

@@ -1,0 +1,6 @@
+{
+  "NSMicrophoneUsageDescription": "Measure the sound level around you with the dB Meter, and route test tones to the earpiece in the Stereo Mixer.",
+  "NSUserTrackingUsageDescription": "Allow tracking so we can measure which ads bring people here and keep improving the app for you.",
+  "ITSAppUsesNonExemptEncryption": false,
+  "NSAdvertisingAttributionReportEndpoint": "https://tenjin-skan.com"
+}

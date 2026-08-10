@@ -1,0 +1,122 @@
+[
+  {
+    "name": "AppScaffold",
+    "file": "app_scaffold.dart",
+    "props": ["body", "topBar", "bottomBar", "backgroundColor", "padded", "scrollable", "safeTop"],
+    "when_to_use": "Base page shell for every screen: token background, optional AppTopBar, standard screen padding, and an optional sticky footer (CTA) with safe-area insets."
+  },
+  {
+    "name": "AppTopBar",
+    "file": "app_top_bar.dart",
+    "props": ["title", "showBack", "showClose", "onBack", "onClose", "actions", "centerTitle", "backgroundColor"],
+    "when_to_use": "Top navigation bar (implements PreferredSizeWidget). Use for screen titles, back arrow, paywall close (X), and trailing actions like a crown/Get Pro."
+  },
+  {
+    "name": "AppBottomBar",
+    "file": "app_bottom_bar.dart",
+    "props": ["items", "currentIndex", "onSelected"],
+    "when_to_use": "The persistent bottom tab bar (Clean / Modes / dB Level / Stereo). Wraps NavigationBar with token styling; used by the app shell and any screen needing tabs."
+  },
+  {
+    "name": "AppButton",
+    "file": "app_button.dart",
+    "props": ["label", "onPressed", "variant", "icon", "expand", "loading"],
+    "when_to_use": "The one styled button. variant=gradient for primary CTAs (Start Cleaning, Start Free Trial, Start Today's Routine), tonal for soft secondary actions, danger for Stop, solid/outlined as needed. Pill-shaped, soft shadow."
+  },
+  {
+    "name": "AppIconButton",
+    "file": "app_icon_button.dart",
+    "props": ["icon", "onPressed", "tooltip", "color", "background", "size"],
+    "when_to_use": "Circular soft-filled icon button for back / close / crown affordances and hero overlays."
+  },
+  {
+    "name": "AppCard",
+    "file": "app_card.dart",
+    "props": ["child", "onTap", "padding", "color", "radius", "elevated", "border"],
+    "when_to_use": "Rounded, soft-shadowed surface — the base for tiles, info panels, tips and grouped rows."
+  },
+  {
+    "name": "AppGradientCard",
+    "file": "app_card.dart",
+    "props": ["child", "onTap", "padding", "radius", "gradient"],
+    "when_to_use": "Hero card filled with the primary blue->teal gradient — the today's-routine / featured block. Children render in white on top."
+  },
+  {
+    "name": "AppListTile",
+    "file": "app_list_tile.dart",
+    "props": ["title", "subtitle", "leadingIcon", "leadingColor", "trailing", "showChevron", "onTap", "card"],
+    "when_to_use": "Standard list row with a leading icon bubble, title/subtitle and trailing chevron. Settings rows, Before-You-Start tips, mode entries, any tappable info line."
+  },
+  {
+    "name": "AppSelectableRow",
+    "file": "app_selectable_row.dart",
+    "props": ["title", "subtitle", "leadingIcon", "selected", "onTap"],
+    "when_to_use": "Single-select (radio) row with a highlighted selected state. Stereo Mixer channel list (Left/Right/Earpiece/Auto) and Language Selection."
+  },
+  {
+    "name": "AppToggleRow",
+    "file": "app_selectable_row.dart",
+    "props": ["title", "subtitle", "leadingIcon", "value", "onChanged"],
+    "when_to_use": "Labelled row with a trailing switch for boolean settings."
+  },
+  {
+    "name": "AppPlanDayRow",
+    "file": "app_plan_day_row.dart",
+    "props": ["dayLabel", "title", "subtitle", "state", "onTap"],
+    "when_to_use": "A day in the 7-Day Cleaning Plan. state=completed (green check), current (highlighted, play glyph) or locked (dimmed, lock). Only completed/current are tappable."
+  },
+  {
+    "name": "AppSectionHeader",
+    "file": "app_section_header.dart",
+    "props": ["title", "subtitle", "actionLabel", "onAction"],
+    "when_to_use": "Section heading with optional subtitle and a trailing text action (e.g. See all)."
+  },
+  {
+    "name": "AppChip",
+    "file": "app_chip.dart",
+    "props": ["label", "icon", "color", "filled", "onTap", "selected"],
+    "when_to_use": "Small pill label with optional icon: social-proof/rating badges, offer tags (3-day free trial), inline status markers, selectable filters."
+  },
+  {
+    "name": "AppBadge",
+    "file": "app_badge.dart",
+    "props": ["label", "icon", "color"],
+    "when_to_use": "Tiny status/count badge or PRO marker meant to overlay or sit inline with an icon."
+  },
+  {
+    "name": "AppTextField",
+    "file": "app_text_field.dart",
+    "props": ["controller", "label", "hint", "leadingIcon", "obscureText", "keyboardType", "onChanged", "onSubmitted"],
+    "when_to_use": "Themed text input with optional label and leading icon."
+  },
+  {
+    "name": "AppLoader",
+    "file": "app_loader.dart",
+    "props": ["style", "status", "color", "size"],
+    "when_to_use": "Indeterminate loader. style=spinner (inline) or bar (splash / loading-transition / before-you-start loading screens). Optional status caption below."
+  },
+  {
+    "name": "AppHeroIcon",
+    "file": "app_hero_icon.dart",
+    "props": ["icon", "size", "gradient"],
+    "when_to_use": "A rounded gradient tile with a FUNCTIONAL glyph (feature, success, completion) for hero placements. AppHeroIcon.frame() wraps illustration artwork in a rounded frame. For a mark that stands for the app itself, use AppIconMark."
+  },
+  {
+    "name": "AppIconMark",
+    "file": "app_hero_icon.dart",
+    "props": ["size"],
+    "when_to_use": "The app's real launcher icon (assets/icon/app_icon.png), clipped with the iOS mask (radius = 22.5% of the side). Use wherever the UI depicts the app itself: splash, loading transition, paywall hero, onboarding welcome."
+  },
+  {
+    "name": "WaveformVisualizer",
+    "file": "waveform_visualizer.dart",
+    "props": ["active", "barCount", "height", "color"],
+    "when_to_use": "Animated mirrored bar waveform for the Stereo Mixer and any playing/cleaning screen. Bars animate when active, settle when idle."
+  },
+  {
+    "name": "LevelGauge",
+    "file": "level_gauge.dart",
+    "props": ["value", "label", "unit", "size", "color"],
+    "when_to_use": "Semicircular arc gauge with a needle for the dB Meter (value 0..1, centre label/unit)."
+  }
+]

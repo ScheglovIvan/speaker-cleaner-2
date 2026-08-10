@@ -1,0 +1,23 @@
+{
+  "name": "Speaker & Headphone Test",
+  "short_name": "Speaker Test",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FF0B00",
+  "description": "Test your speakers and headphones with tuned tones, a left/right channel test and a frequency sweep.",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/Icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/Icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

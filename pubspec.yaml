@@ -1,0 +1,69 @@
+name: speaker_cleaner
+description: Speaker & headphone test app - tone generator, stereo left/right channel test and sweep, built with Flutter.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Framework localizations (Material/Cupertino/Widgets) for the selected locale.
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  # Divergent typography: primary family applied via GoogleFonts in the theme.
+  google_fonts: ^6.2.1
+  # Deep-link handling for iosforge://screen/<id>.
+  app_links: ^6.3.0
+  # Local persistence (plan progress, language, entitlement cache).
+  shared_preferences: ^2.2.3
+  # Test-signal playback: the generated sine/sweep WAV tone bank, the
+  # water-eject clip and the completion chime.
+  audioplayers: ^6.1.0
+  # Hero / onboarding background video (.mp4).
+  video_player: ^2.9.1
+  # Subscriptions + paywall products via Apphud (see apphud_config.json).
+  apphud: ^2.0.0
+  # Real microphone permission dialog for the dB Meter.
+  permission_handler: ^11.3.0
+  # Live decibel readings from the microphone (dB Meter level source).
+  noise_meter: ^5.0.0
+  # Install/revenue attribution via Tenjin (see attribution_config.json).
+  # Measurement only — no ad SDK ships. Unpinned: the build pins the newer
+  # plugin that exposes `TenjinSDK.instance.initialize(sdkKey: ...)`.
+  tenjin_plugin: any
+  # App Tracking Transparency prompt + IDFA (requested after the first frame).
+  app_tracking_transparency: ^2.0.0
+  # Open the real Terms of Use / Privacy Policy links in the external browser.
+  url_launcher: ^6.3.0
+  # Native system share sheet for the "Share" settings row.
+  share_plus: ^10.0.0
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.14.1
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/
+    - assets/
+    - assets/media/
+    - assets/fonts/
+    # The generated tone bank (tone_63.wav … tone_16000.wav +
+    # sweep_20_20000.wav, produced by tool/generate_tones.py) plus the
+    # water-eject clip and the completion chime. The directory entry bundles
+    # every file in it, so regenerating the bank needs no pubspec change.
+    - assets/audio/
+
+flutter_launcher_icons:
+  image_path: "assets/icon/app_icon.png"
+  remove_alpha_ios: true
+  ios: true
+  android: true
+  min_sdk_android: 21
