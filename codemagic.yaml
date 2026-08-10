@@ -1,0 +1,113 @@
+workflows:
+  ios-store:
+    name: iOS Store (signed - App Store Connect)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      vars:
+        BUNDLE_ID: "com.chritech.speakercleaner"
+        APP_STORE_APPLE_ID: 6793187697
+      flutter: 3.44.4
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Scaffold platform folders
+        script: flutter create --platforms=ios,android .
+      - name: Set iOS deployment target 15.0
+        script: |
+          sed -i '' "s/^# *platform :ios.*/platform :ios, '15.0'/" ios/Podfile || true
+          sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.0'/" ios/Podfile || true
+          perl -0pi -e "s/flutter_additional_ios_build_settings\(target\)/flutter_additional_ios_build_settings(target)\n      target.build_configurations.each { |c| c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0' }/g" ios/Podfile || true
+          sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*/IPHONEOS_DEPLOYMENT_TARGET = 15.0/g" ios/Runner.xcodeproj/project.pbxproj || true
+      - name: Set bundle id and display name
+        script: |
+          # A signed store build MUST carry the real bundle id in the binary (unlike the
+          # unsigned sideload build, which stays at com.example.*). 6793187697
+          # is the numeric App Store id used for the auto build number and the upload.
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName Speaker & Headphone Test" ios/Runner/Info.plist             || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string Speaker & Headphone Test" ios/Runner/Info.plist
+          sed -i '' "s/PRODUCT_BUNDLE_IDENTIFIER = [^;]*;/PRODUCT_BUNDLE_IDENTIFIER = com.chritech.speakercleaner;/g" ios/Runner.xcodeproj/project.pbxproj || true
+          sed -i '' 's/applicationId "[^"]*"/applicationId "com.chritech.speakercleaner"/' android/app/build.gradle || true
+          sed -i '' 's/android:label="[^"]*"/android:label="Speaker & Headphone Test"/' android/app/src/main/AndroidManifest.xml || true
+      - name: Inject iOS permission usage descriptions
+        script: |
+          if [ -f ios_permissions.json ]; then
+            python3 - <<'PY'
+          import json, subprocess
+          PLIST = "ios/Runner/Info.plist"
+          def buddy(cmd):
+              return subprocess.run(["/usr/libexec/PlistBuddy", "-c", cmd, PLIST]).returncode
+          data = json.load(open("ios_permissions.json"))
+          for key, value in data.items():
+              if isinstance(value, bool):
+                  buddy(f"Delete :{key}")
+                  buddy(f"Add :{key} bool {'true' if value else 'false'}")
+              elif isinstance(value, list):
+                  buddy(f"Delete :{key}")
+                  buddy(f"Add :{key} array")
+                  for i, item in enumerate(value):
+                      buddy(f"Add :{key}:{i} string {item}")
+              else:
+                  text = str(value)
+                  if buddy(f"Set :{key} {text}") != 0:
+                      buddy(f"Add :{key} string {text}")
+          print("applied", len(data), "iOS permission key(s)")
+          PY
+          fi
+      - name: Merge SKAdNetwork ad network ids
+        script: |
+          if [ -f skadnetwork_ids.plist ]; then
+            python3 - <<'PY'
+          import plistlib
+          INFO = "ios/Runner/Info.plist"
+          with open("skadnetwork_ids.plist", "rb") as f:
+              items = plistlib.load(f).get("SKAdNetworkItems") or []
+          if items:
+              with open(INFO, "rb") as f:
+                  info = plistlib.load(f)
+              info["SKAdNetworkItems"] = items
+              with open(INFO, "wb") as f:
+                  plistlib.dump(info, f)
+          print("merged", len(items), "SKAdNetwork id(s)")
+          PY
+          fi
+      - name: Pin SDK versions
+        script: |
+          sed -i '' -E "s/^([[:space:]]*apphud:).*/\1 3.1.2/" pubspec.yaml || true
+          sed -i '' -E "s/^([[:space:]]*tenjin_plugin:).*/\1 ^1.2.0/" pubspec.yaml || true
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Generate launcher icons
+        script: |
+          # Builds every iOS/Android launcher size from assets/icon/app_icon.png.
+          # A no-op when the app has no staged icon, so it never fails a build.
+          if [ -f assets/icon/app_icon.png ]; then
+            dart run flutter_launcher_icons || flutter pub run flutter_launcher_icons || true
+          fi
+      - name: Install CocoaPods
+        script: find . -name Podfile -execdir pod install \; || true
+      - name: Set up code signing
+        script: |
+          # Env-var signing: the App Store Connect API key + certificate private key are
+          # injected as build variables, so app-store-connect fetches (or, with --create,
+          # mints once and re-uses) the distribution certificate + App Store profile, and
+          # use-profiles writes export_options.plist. No key is stored in this repo.
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID"             --platform IOS             --type IOS_APP_STORE             --certificate-key="$CERTIFICATE_PRIVATE_KEY"             --create
+          keychain add-certificates
+          xcode-project use-profiles
+      - name: Build signed IPA
+        script: |
+          # Auto-increment off the highest build number EVER uploaded (TestFlight +
+          # processing included) so re-uploads never collide. get-latest-build-number
+          # sees all builds; get-latest-app-store-build-number only sees a live App Store
+          # version (absent until first release) and would keep returning 0 -> build 1.
+          LATEST=$(app-store-connect get-latest-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
+          flutter build ipa --release             --build-number=$(($LATEST + 1))             --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: false
